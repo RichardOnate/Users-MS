@@ -1,13 +1,10 @@
-import {
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Users } from '../schemas/users.schema';
 import { Model } from 'mongoose';
 import { FindUsersService } from './find-user.service';
+import { StringUtils } from 'src/utils/string.utils';
 
 @Injectable()
 export class CreateUserService {
@@ -34,7 +31,14 @@ export class CreateUserService {
   }
 
   async userSave(createUserDto: CreateUserDto) {
-    const newUser = new this.userModel(createUserDto);
+    const { fullName, lastName, password } = createUserDto;
+    createUserDto.fullName = StringUtils.capitalize(fullName);
+    createUserDto.lastName = StringUtils.capitalize(lastName);
+    const encryptedPassword = await StringUtils.hashPassword(password);
+    const newUser = new this.userModel({
+      ...createUserDto,
+      password: encryptedPassword,
+    });
     return await newUser.save();
   }
 }

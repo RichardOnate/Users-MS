@@ -11,6 +11,11 @@ export class Users {
   @IsString()
   fullName: string;
 
+  @Prop()
+  @IsNotEmpty()
+  @IsString()
+  lastName: string;
+
   @Prop({ unique: true })
   @IsNotEmpty()
   @IsString()
