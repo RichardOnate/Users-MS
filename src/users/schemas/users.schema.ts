@@ -11,7 +11,7 @@ export class Users {
   @IsString()
   fullName: string;
 
-  @Prop()
+  @Prop({ unique: true })
   @IsNotEmpty()
   @IsString()
   username: string;
@@ -21,7 +21,7 @@ export class Users {
   @IsString()
   password: string;
 
-  @Prop()
+  @Prop({ unique: true })
   @IsNotEmpty()
   @IsString()
   @IsEmail()

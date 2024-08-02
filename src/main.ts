@@ -1,8 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
+  const PORT = process.env.PORT || 3000;
+
   const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+  app.useGlobalPipes(new ValidationPipe());
+
+  await app.listen(PORT);
+  if (process.env.APP_ENV === 'development') {
+    console.info(`Users Microservice running on port ${PORT}`);
+  }
 }
 bootstrap();

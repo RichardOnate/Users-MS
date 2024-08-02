@@ -7,12 +7,12 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { FindUsersService } from './find-user.service';
-import { CreateUserService } from './create-user.service';
-import { DeleteUserService } from './delete-user.service';
-import { UpdateUserService } from './update-user.service';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { CreateUserService } from '../services/create-user.service';
+import { DeleteUserService } from '../services/delete-user.service';
+import { FindUsersService } from '../services/find-user.service';
+import { UpdateUserService } from '../services/update-user.service';
 
 @Controller('users')
 export class UsersController {
@@ -24,16 +24,13 @@ export class UsersController {
   ) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {}
+  async create(@Body() createUserDto: CreateUserDto) {
+    return await this.createUserService.createUser(createUserDto);
+  }
 
   @Get()
   findAll() {
     return this.findUsersService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.findUsersService.findOne(+id);
   }
 
   @Patch(':id')
