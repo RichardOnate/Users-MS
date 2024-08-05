@@ -31,6 +31,15 @@ export class Users {
   @IsString()
   @IsEmail()
   email: string;
+
+  @Prop()
+  @IsNotEmpty()
+  @IsString()
+  role: string;
+
+  @Prop()
+  @IsNotEmpty()
+  status: boolean;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

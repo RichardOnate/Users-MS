@@ -5,6 +5,7 @@ import { Users } from '../schemas/users.schema';
 import { Model } from 'mongoose';
 import { FindUsersService } from './find-user.service';
 import { StringUtils } from 'src/utils/string.utils';
+import { RolesType } from 'src/shared/enum/roles.enum';
 
 @Injectable()
 export class CreateUserService {
@@ -14,8 +15,26 @@ export class CreateUserService {
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
-    const { username, email } = createUserDto;
+    const { username, email, role } = createUserDto;
+    await this.checkUserData(username, email);
+    return await this.userSave(createUserDto, role);
+  }
 
+  async userSave(createUserDto: CreateUserDto, role: string) {
+    const { fullName, lastName, password } = createUserDto;
+    createUserDto.fullName = StringUtils.capitalize(fullName);
+    createUserDto.lastName = StringUtils.capitalize(lastName);
+    const encryptedPassword = await StringUtils.hashPassword(password);
+    const newUser = new this.userModel({
+      ...createUserDto,
+      password: encryptedPassword,
+      role,
+      status: true,
+    });
+    return await newUser.save();
+  }
+
+  private async checkUserData(username: string, email: string) {
     const [existingUser, emailExists] = await Promise.all([
       this.findUsersService.checkUserExists(username),
       this.findUsersService.checkEmailExists(email),
@@ -26,19 +45,5 @@ export class CreateUserService {
     } else if (emailExists) {
       throw new ConflictException('Email already exists!');
     }
-
-    return await this.userSave(createUserDto);
-  }
-
-  async userSave(createUserDto: CreateUserDto) {
-    const { fullName, lastName, password } = createUserDto;
-    createUserDto.fullName = StringUtils.capitalize(fullName);
-    createUserDto.lastName = StringUtils.capitalize(lastName);
-    const encryptedPassword = await StringUtils.hashPassword(password);
-    const newUser = new this.userModel({
-      ...createUserDto,
-      password: encryptedPassword,
-    });
-    return await newUser.save();
   }
 }

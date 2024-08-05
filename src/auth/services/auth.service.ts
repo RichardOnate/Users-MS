@@ -1,10 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { CreateUserService } from 'src/users/services/create-user.service';
 import { JwtService } from '@nestjs/jwt';
-import { LoginDto } from 'src/auth/dto/login.dto';
 import { FindUsersService } from 'src/users/services/find-user.service';
 import { compare } from 'bcrypt';
+import { LoginDto } from '../dto/login.dto';
+import { RegisterDto } from '../dto/register.dto';
+import { RolesType } from 'src/shared/enum/roles.enum';
 
 @Injectable()
 export class AuthService {
@@ -13,11 +14,14 @@ export class AuthService {
     private readonly findUser: FindUsersService,
     private readonly jwtService: JwtService,
   ) {}
-  async register(createUserDto: CreateUserDto) {
-    const user = await this.createUser.createUser(createUserDto);
+  async register(registerDto: RegisterDto) {
+    const user = { ...registerDto, role: RolesType.USER };
+    const userCreated = await this.createUser.createUser(user);
+
     const payload = {
-      sub: user._id,
-      username: user.username,
+      sub: userCreated._id,
+      username: userCreated.username,
+      role: userCreated.role,
     };
     const token = this.jwtService.sign(payload);
     return { token };
@@ -29,9 +33,10 @@ export class AuthService {
     const checkPassword = await compare(password, user.password);
 
     if (!user || !checkPassword) {
-      throw new UnauthorizedException('Invalid credentials!');
+      throw new UnauthorizedException('Invalid credentials');
     }
-    const payload = { sub: user.id, username: user.username };
+    const payload = { sub: user.id, username: user.username, role: user.role };
+
     const token = this.jwtService.sign(payload);
     return { token };
   }

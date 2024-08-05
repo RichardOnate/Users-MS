@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, IsEmail, Matches } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Matches,
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -22,4 +28,9 @@ export class CreateUserDto {
   @IsEmail()
   @Matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/g)
   email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
+  role: string;
 }
