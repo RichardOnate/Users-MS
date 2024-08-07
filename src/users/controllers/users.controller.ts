@@ -24,7 +24,6 @@ import {
 import { Roles } from 'src/shared/decorators/roles.decorator';
 import { RolesType } from 'src/shared/enum/roles.enum';
 import { JwtAuthGuard } from 'src/auth/guard/authentication.guard';
-import { JwtStrategy } from 'src/auth/strategy/auth.strategy';
 import { AuthorizationGuard } from 'src/auth/guard/authorization.guard';
 
 @Roles([RolesType.ADMIN])
@@ -74,5 +73,15 @@ export class UsersController {
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {}
 
   @Delete(':id')
-  remove(@Param('id') id: string) {}
+  @ApiOperation({
+    summary: 'Elimina un usuario.',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Elimina el usuario con el identificador proporcionado, aplicando el borrado lógico.',
+  })
+  async remove(@Param('id') id: string) {
+    return await this.deleteUserService.deleteUser(id);
+  }
 }

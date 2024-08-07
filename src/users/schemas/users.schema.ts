@@ -37,9 +37,9 @@ export class Users {
   @IsString()
   role: string;
 
-  @Prop()
+  @Prop({ default: true })
   @IsNotEmpty()
-  status: boolean;
+  active: boolean;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);
